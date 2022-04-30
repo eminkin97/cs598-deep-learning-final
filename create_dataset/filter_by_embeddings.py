@@ -2,12 +2,20 @@ import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 
-## Read csv containing phrase to concept mapping
-result_d_df = pd.read_csv('result_dataset.csv')
+#process metamap results
+metamap_df = pd.read_csv('metamap_result.txt', sep="|", header=None)
+phrases = pd.read_csv('phrases.txt', sep="|", header=None)
+
+#join phrases and metamap results
+phrases[0] = phrases[0].astype(str)
+phrases_metamap_df = phrases.merge(df, how='left', on=0)
+phrases_metamap_df = phrases_metamap_df[['1_x', 2, 3, 4]]
+phrases_metamap_df.columns = ['phrases', 'MMI_score', 'concepts', 'UMLS Identifier']
+phrases_metamap_df['concepts'] = phrases_metamap_df['concepts'].astype(str)
 
 #phrases and concepts
-phrases = result_d_df['phrases'].tolist()
-concepts = result_d_df['concepts'].tolist()
+phrases = phrases_metamap_df['phrases'].tolist()
+concepts = phrases_metamap_df['concepts'].tolist()
 
 #determine neighbors for each concept
 concept_neighbors = {}
@@ -48,4 +56,5 @@ for concept in concept_neighbors:
   for t in neighbors[0:K]:
     result_set.append([concept, t[0], t[1]])
 
-pd.DataFrame(result_set, columns=["concepts", "phrases", "cosine similarity"]).to_csv("final_dataset.csv", index=False)
+res = pd.DataFrame(result_set, columns=["concepts", "phrases", "cosine similarity"])
+res.merge(phrases_metamap_df, on=['phrases', 'concepts']).to_csv('supervised_dataset.txt', sep="|", index=False)
