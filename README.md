@@ -46,3 +46,17 @@ A k-nearest phrases approach is implemented to filter the dataset so that only t
 ## Evaluate Dataset
 
 This process evaluates the distantly supervised dataset constructed in the previous sections on a two layer feed forward neural network.
+
+### Read Cadec
+
+This script, `read_cadec.py`, reads the [CADEC](https://pubmed.ncbi.nlm.nih.gov/25817970/) dataset that will be used as the test set for evaluating the performance of the model.
+This dataset is in the AMT-SCT subfolder and has informal medical phrases obtained from [askapatient.com](https://www.askapatient.com) mapped to SNOMED Clinical Terms.
+The output of this script is `cadec_dataset.txt`
+
+### Train
+
+This script trains a two-layer feedforward neural network using the supervised_dataset obtained in the previous sections. 
+It then uses a 1 nearest neighbor approach to classify each informal medical phrase to a concept and outputs the observed cosine similarity.
+The cadec dataset is used to evaluate the performance of the model after each iteration of training.
+
+The inputs to this script are `supervised_dataset.txt` and `cadec_dataset.txt`
