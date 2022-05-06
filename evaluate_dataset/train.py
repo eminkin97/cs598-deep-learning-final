@@ -54,10 +54,10 @@ train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 test_dataset = TensorDataset(phrases_test_embed, concepts_test_embed)
 test_loader = DataLoader(test_dataset, batch_size=32, shuffle=True)
 
-#Evaluation function on cadec
 def evaluate(model, loader, concepts_corpus):
     model.eval()
     acc_result = []
+    cos_sims = []
 
     for x, y in loader:
         y_hat = model(x)
@@ -71,14 +71,17 @@ def evaluate(model, loader, concepts_corpus):
         out = torch.stack(out)
         
         #compare predicted result with truth
-        acc_result.append(torch.equal(out,y))
+        for i in range(out.shape[0]):
+          acc_result.append(torch.equal(out[i],y[i]))
+          cos_sims.append(torch.nn.functional.cosine_similarity(out[i], y[i], dim=0))        
 
     train_acc = np.sum(acc_result)/len(acc_result)
-    print(f"acc: {train_acc:.3f}")
+    csim = np.sum(cos_sims)/len(cos_sims)
+    print(f"acc: {train_acc:.3f}, avg cosine similarity: {csim:.3f}")
     return train_acc
 
 #train the model
-n_epochs = 100
+n_epochs = 200
 
 model.train()
 
