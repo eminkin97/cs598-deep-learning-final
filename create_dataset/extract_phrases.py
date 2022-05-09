@@ -62,4 +62,4 @@ for phrase in phrases:
     dataset.append([phrase,c])
   
 #output results to csv
-pd.DataFrame(dataset, columns=['phrases', 'concepts']).to_csv('result_dataset.csv', index=False)
+pd.DataFrame(dataset, columns=['phrases', 'concepts'])['phrases'].to_csv('phrases.csv', index=True, sep="|")
